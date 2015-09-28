@@ -1,0 +1,12 @@
+F:\MyCode\Net\MyFileEditor\MyFileEditor\bin\Release\MyFileEditor.exe
+F:\MyCode\Net\MyFileEditor\MyFileEditor\bin\Release\MyFileEditor.pdb
+F:\MyCode\Net\MyFileEditor\MyFileEditor\obj\Release\MyFileEditor.AboutDialog.resources
+F:\MyCode\Net\MyFileEditor\MyFileEditor\obj\Release\MyFileEditor.FindDialog.resources
+F:\MyCode\Net\MyFileEditor\MyFileEditor\obj\Release\MyFileEditor.Child.resources
+F:\MyCode\Net\MyFileEditor\MyFileEditor\obj\Release\MyFileEditor.MyEdit.resources
+F:\MyCode\Net\MyFileEditor\MyFileEditor\obj\Release\MyFileEditor.Properties.Resources.resources
+F:\MyCode\Net\MyFileEditor\MyFileEditor\obj\Release\MyFileEditor.ReplaceDialog.resources
+F:\MyCode\Net\MyFileEditor\MyFileEditor\obj\Release\MyFileEditor.csproj.GenerateResource.Cache
+F:\MyCode\Net\MyFileEditor\MyFileEditor\obj\Release\MyFileEditor.exe
+F:\MyCode\Net\MyFileEditor\MyFileEditor\obj\Release\MyFileEditor.pdb
+F:\MyCode\Net\MyFileEditor\MyFileEditor\obj\Release\MyFileEditor.csprojResolveAssemblyReference.cache
