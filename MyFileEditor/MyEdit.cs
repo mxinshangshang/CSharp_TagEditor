@@ -516,11 +516,11 @@ namespace TagEditor
             e.Graphics.DrawString(r.Text, r.SelectionFont, Brushes.Black, 0, 0);
             Code39 _Code39 = new Code39();
             _Code39.Height = 19;
-            _Code39.Magnify = 0;
+            _Code39.Magnify = 0x00;
             _Code39.ViewFont = new Font("Arial", 20);
-            PointF point = new Point(50, 50);
-            e.Graphics.TranslateTransform(0, 197);
-            e.Graphics.RotateTransform(-90.0F);
+            PointF point = new Point(286, 90);
+            //e.Graphics.TranslateTransform(0, 197);
+            //e.Graphics.RotateTransform(-90.0F);
             e.Graphics.DrawImage(_Code39.GetCodeImage(Prm[2], Code39.Code39Model.Code39Normal, true), point);
         }
 
@@ -998,6 +998,7 @@ namespace TagEditor
                     break;
                 default:
                     _ValueChar = p_Text.ToCharArray();
+                    Array.Reverse(_ValueChar);
                     for (int i = 0; i != _ValueChar.Length; i++)
                     {
                         if ((int)_ValueChar[i] >= 97 && (int)_ValueChar[i] <= 122)
@@ -1037,8 +1038,11 @@ namespace TagEditor
         {
             char[] _Value = p_Text.ToCharArray();
 
+            Array.Reverse(_Value);                  // 将数组反转
+
             //宽 == 需要绘制的数量*放大倍数 + 两个字的宽   
-            Bitmap _CodeImage = new Bitmap(_Value.Length * ((int)m_Magnify + 1), (int)m_Height);
+            //Bitmap _CodeImage = new Bitmap(_Value.Length * ((int)m_Magnify + 1), (int)m_Height);
+            Bitmap _CodeImage = new Bitmap((int)m_Height, _Value.Length * ((int)m_Magnify + 1));
             Graphics _Garphics = Graphics.FromImage(_CodeImage);
             _Garphics.FillRectangle(Brushes.White, new Rectangle(0, 0, _CodeImage.Width, _CodeImage.Height));
 
@@ -1048,13 +1052,16 @@ namespace TagEditor
                 int _DrawWidth = m_Magnify + 1;
                 if (_Value[i] == '1')
                 {
-                    _Garphics.FillRectangle(Brushes.Black, new Rectangle(_LenEx, 0, _DrawWidth, m_Height));
+                    //_Garphics.FillRectangle(Brushes.Black, new Rectangle(_LenEx, 0, _DrawWidth, m_Height));
+                    _Garphics.FillRectangle(Brushes.Black, new Rectangle(0, _LenEx,  m_Height, _DrawWidth));
                 }
                 else
                 {
-                    _Garphics.FillRectangle(Brushes.White, new Rectangle(_LenEx, 0, _DrawWidth, m_Height));
+                    //_Garphics.FillRectangle(Brushes.White, new Rectangle(_LenEx, 0, _DrawWidth, m_Height));
+                    _Garphics.FillRectangle(Brushes.White, new Rectangle(0, _LenEx, m_Height, _DrawWidth));
                 }
                 _LenEx += _DrawWidth;
+                //_LenEx += m_Height;
             }
 
             _Garphics.Dispose();

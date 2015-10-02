@@ -11,3 +11,17 @@ C:\Users\jiang\Desktop\MyFileEditor\MyFileEditor\obj\Debug\TagEditor.ReplaceDial
 C:\Users\jiang\Desktop\MyFileEditor\MyFileEditor\obj\Debug\TagEditor.csproj.GenerateResource.Cache
 C:\Users\jiang\Desktop\MyFileEditor\MyFileEditor\obj\Debug\MyFileEditor.exe
 C:\Users\jiang\Desktop\MyFileEditor\MyFileEditor\obj\Debug\MyFileEditor.pdb
+C:\Users\jiang\Desktop\TagEditor\MyFileEditor\bin\Debug\MyFileEditor.exe.config
+C:\Users\jiang\Desktop\TagEditor\MyFileEditor\obj\Debug\MyFileEditor.exe
+C:\Users\jiang\Desktop\TagEditor\MyFileEditor\obj\Debug\MyFileEditor.pdb
+C:\Users\jiang\Desktop\TagEditor\MyFileEditor\bin\Debug\MyFileEditor.exe
+C:\Users\jiang\Desktop\TagEditor\MyFileEditor\bin\Debug\MyFileEditor.pdb
+C:\Users\jiang\Desktop\TagEditor\MyFileEditor\obj\Debug\TagEditor.csprojResolveAssemblyReference.cache
+C:\Users\jiang\Desktop\TagEditor\MyFileEditor\obj\Debug\TagEditor.AboutDialog.resources
+C:\Users\jiang\Desktop\TagEditor\MyFileEditor\obj\Debug\TagEditor.FindDialog.resources
+C:\Users\jiang\Desktop\TagEditor\MyFileEditor\obj\Debug\TagEditor.Child.resources
+C:\Users\jiang\Desktop\TagEditor\MyFileEditor\obj\Debug\TagEditor.IDlogin.resources
+C:\Users\jiang\Desktop\TagEditor\MyFileEditor\obj\Debug\TagEditor.MyEdit.resources
+C:\Users\jiang\Desktop\TagEditor\MyFileEditor\obj\Debug\MyFileEditor.Properties.Resources.resources
+C:\Users\jiang\Desktop\TagEditor\MyFileEditor\obj\Debug\TagEditor.ReplaceDialog.resources
+C:\Users\jiang\Desktop\TagEditor\MyFileEditor\obj\Debug\TagEditor.csproj.GenerateResource.Cache
