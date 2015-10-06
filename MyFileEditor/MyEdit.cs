@@ -521,7 +521,8 @@ namespace TagEditor
             PointF point = new Point(286, 90);
             //e.Graphics.TranslateTransform(0, 197);
             //e.Graphics.RotateTransform(-90.0F);
-            e.Graphics.DrawImage(_Code39.GetCodeImage(Prm[2], Code39.Code39Model.Code39Normal, true), point);
+            e.Graphics.ScaleTransform(1, 0.65f);
+            e.Graphics.DrawImage(_Code39.GetCodeImage(Prm[2], Code39.Code39Model.Code39Normal, true), point);           
         }
 
         public void 字体_Click(object sender, EventArgs e)
@@ -848,51 +849,6 @@ namespace TagEditor
             Properties.Settings.Default.ExcelPathSetting = ExcelPath;
             Properties.Settings.Default.Save();
         }
-
-        public static Bitmap GetThumbnail(Bitmap b, int destHeight, int destWidth)
-        {
-            System.Drawing.Image imgSource = b;
-            System.Drawing.Imaging.ImageFormat thisFormat = imgSource.RawFormat;
-            int sW = 0, sH = 0;
-            // 按比例缩放           
-            int sWidth = imgSource.Width;
-            int sHeight = imgSource.Height;
-            if (sHeight > destHeight || sWidth > destWidth)
-            {
-                if ((sWidth * destHeight) > (sHeight * destWidth))
-                {
-                    sW = destWidth;
-                    sH = (destWidth * sHeight) / sWidth;
-                }
-                else
-                {
-                    sH = destHeight;
-                    sW = (sWidth * destHeight) / sHeight;
-                }
-            }
-            else
-            {
-                sW = sWidth;
-                sH = sHeight;
-            }
-            Bitmap outBmp = new Bitmap(destWidth, destHeight);
-            Graphics g = Graphics.FromImage(outBmp);
-            g.Clear(Color.Transparent);
-            // 设置画布的描绘质量         
-            g.CompositingQuality = CompositingQuality.HighQuality;
-            g.SmoothingMode = SmoothingMode.HighQuality;
-            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            g.DrawImage(imgSource, new Rectangle((destWidth - sW) / 2, (destHeight - sH) / 2, sW, sH), 0, 0, imgSource.Width, imgSource.Height, GraphicsUnit.Pixel);
-            g.Dispose();
-            // 以下代码为保存图片时，设置压缩质量     
-            EncoderParameters encoderParams = new EncoderParameters();
-            long[] quality = new long[1];
-            quality[0] = 100;
-            EncoderParameter encoderParam = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
-            encoderParams.Param[0] = encoderParam;
-            imgSource.Dispose();
-            return outBmp;
-        }
     }
 
     /// <summary>
@@ -1052,16 +1008,20 @@ namespace TagEditor
                 int _DrawWidth = m_Magnify + 1;
                 if (_Value[i] == '1')
                 {
-                    //_Garphics.FillRectangle(Brushes.Black, new Rectangle(_LenEx, 0, _DrawWidth, m_Height));
-                    _Garphics.FillRectangle(Brushes.Black, new Rectangle(0, _LenEx,  m_Height, _DrawWidth));
+                    _Garphics.FillRectangle(Brushes.Black, new Rectangle(0, _LenEx, m_Height, _DrawWidth));
+                    //_Garphics.FillRectangle(Brushes.Black, Rectangle.Inflate(new Rectangle(0, _LenEx, m_Height, _DrawWidth), 1, -1));
+                    //_Garphics.FillRectangle(Brushes.Black, 0, _LenEx, m_Height,(float)0.8 );
+
                 }
                 else
                 {
-                    //_Garphics.FillRectangle(Brushes.White, new Rectangle(_LenEx, 0, _DrawWidth, m_Height));
                     _Garphics.FillRectangle(Brushes.White, new Rectangle(0, _LenEx, m_Height, _DrawWidth));
+                    //_Garphics.FillRectangle(Brushes.White, Rectangle.Inflate(new Rectangle(0, _LenEx, m_Height, _DrawWidth), 1, -1));
+                    //_Garphics.FillRectangle(Brushes.White, 0, _LenEx, m_Height,(float)0.8);
+
                 }
+                //_LenEx += (float)0.8;
                 _LenEx += _DrawWidth;
-                //_LenEx += m_Height;
             }
 
             _Garphics.Dispose();
@@ -1087,6 +1047,34 @@ namespace TagEditor
             int _StarWidth = (p_CodeImage.Width - (int)_FontSize.Width) / 2;
             _Graphics.DrawString(p_Text, m_ViewFont, Brushes.Black, _StarWidth, _StarHeight);
             _Graphics.Dispose();
+        }
+
+        public Image GetImageThumb(Bitmap mg, Size newSize)
+        {
+            double ratio = 0d;
+            double myThumbWidth = 0d;
+            double myThumbHeight = 0d;
+            int x = 0;
+            int y = 0;
+            Bitmap bp;
+            if ((mg.Width / Convert.ToDouble(newSize.Width)) > (mg.Height / Convert.ToDouble(newSize.Height)))
+                ratio = Convert.ToDouble(mg.Width) / Convert.ToDouble(newSize.Width);
+            else
+                ratio = Convert.ToDouble(mg.Height) / Convert.ToDouble(newSize.Height);
+            myThumbHeight = Math.Ceiling(mg.Height / ratio);
+            myThumbWidth = Math.Ceiling(mg.Width / ratio);
+            Size thumbSize = new Size((int)newSize.Width, (int)newSize.Height);
+            bp = new Bitmap(newSize.Width, newSize.Height);
+            x = (newSize.Width - thumbSize.Width) / 2;
+            y = (newSize.Height - thumbSize.Height);
+            Graphics g = Graphics.FromImage(bp);
+            g.SmoothingMode = SmoothingMode.HighQuality;
+            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            Rectangle rect = new Rectangle(x, y, thumbSize.Width, thumbSize.Height);
+            g.DrawImage(mg, rect, 0, 0, mg.Width, mg.Height, GraphicsUnit.Pixel);
+            Image bn = bp as Image;
+            return bn;
         }
     }
 }
