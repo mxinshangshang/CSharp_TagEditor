@@ -13,11 +13,75 @@ using System.Text.RegularExpressions;
 using System.Drawing.Imaging;
 using System.Data.OleDb;
 using System.Drawing.Drawing2D;
+using System.Runtime.InteropServices;
 
 namespace TagEditor
 {
     public partial class MyEdit : Form
     {
+
+        #region 修改行间距
+        public const int WM_USER = 0x0400;
+        public const int EM_GETPARAFORMAT = WM_USER + 61;
+        public const int EM_SETPARAFORMAT = WM_USER + 71;
+        public const long MAX_TAB_STOPS = 32;
+        public const uint PFM_LINESPACING = 0x00000100;
+        [StructLayout(LayoutKind.Sequential)]
+        private struct PARAFORMAT2
+        {
+            public int cbSize;
+            public uint dwMask;
+            public short wNumbering;
+            public short wReserved;
+            public int dxStartIndent;
+            public int dxRightIndent;
+            public int dxOffset;
+            public short wAlignment;
+            public short cTabCount;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+            public int[] rgxTabs;
+            public int dySpaceBefore;
+            public int dySpaceAfter;
+            public int dyLineSpacing;
+            public short sStyle;
+            public byte bLineSpacingRule;
+            public byte bOutlineLevel;
+            public short wShadingWeight;
+            public short wShadingStyle;
+            public short wNumberingStart;
+            public short wNumberingStyle;
+            public short wNumberingTab;
+            public short wBorderSpace;
+            public short wBorderWidth;
+            public short wBorders;
+        }
+
+        [DllImport("user32", CharSet = CharSet.Auto)]
+        private static extern IntPtr SendMessage(HandleRef hWnd, int msg, int wParam, ref PARAFORMAT2 lParam);
+
+        /// <summary>
+        /// 设置行距
+        /// </summary>
+        /// <param name="ctl">控件</param>
+        /// <param name="dyLineSpacing">间距</param>
+        public static void SetLineSpace(Control ctl, int dyLineSpacing)
+        {
+            PARAFORMAT2 fmt = new PARAFORMAT2();
+            fmt.cbSize = Marshal.SizeOf(fmt);
+            fmt.bLineSpacingRule = 4;// bLineSpacingRule;
+            fmt.dyLineSpacing = dyLineSpacing;
+            fmt.dwMask = PFM_LINESPACING;
+            try
+            {
+                SendMessage(new HandleRef(ctl, ctl.Handle), EM_SETPARAFORMAT, 0, ref fmt);
+            }
+            catch
+            {
+
+            }
+        }
+        #endregion
+
         private int tabNum = 0;                // 标签数
         RichTextBox r;
         private string[] fontFamilyNames;
@@ -514,15 +578,119 @@ namespace TagEditor
                 }
             }
             e.Graphics.DrawString(r.Text, r.SelectionFont, Brushes.Black, 0, 0);
-            Code39 _Code39 = new Code39();
-            _Code39.Height = 19;
-            _Code39.Magnify = 0x00;
-            _Code39.ViewFont = new Font("Arial", 20);
-            PointF point = new Point(286, 90);
-            //e.Graphics.TranslateTransform(0, 197);
-            //e.Graphics.RotateTransform(-90.0F);
-            e.Graphics.ScaleTransform(1, 0.65f);
-            e.Graphics.DrawImage(_Code39.GetCodeImage(Prm[2], Code39.Code39Model.Code39Normal, true), point);           
+            //e.Graphics.TranslateTransform(100, 100);
+            //e.Graphics.RotateTransform(360.0F);
+            //e.Graphics.TranslateTransform(0.0F, -320.0F); // 平移
+            e.Graphics.ScaleTransform(0.65f, 1);
+            //e.Graphics.ScaleTransform(1, 0.65f);
+            e.Graphics.DrawImage(DrawImg39(new EnCodeString().code39(Prm[2])), 100.0F, 50.0F);  
+        }
+
+        private Image DrawImg39(String Encoded_Value)
+        {
+            int x = 0; //左边界
+            int y = 0; //上边界
+            int WidLength = 2; //粗BarCode长度
+            int NarrowLength = 1; //细BarCode长度
+            int BarCodeHeight = 30; //BarCode高度
+            int intSourceLength = 8;
+
+            Bitmap objBitmap = new Bitmap(((WidLength * 3 + NarrowLength * 7) * (intSourceLength + 2)) + (x * 2), BarCodeHeight + (y * 2));
+            //Bitmap objBitmap = new Bitmap(BarCodeHeight + (y * 2), ((WidLength * 3 + NarrowLength * 7) * (intSourceLength + 2)) + (x * 2));
+            Graphics objGraphics = Graphics.FromImage(objBitmap);
+            objGraphics.FillRectangle(Brushes.White, 0, 0, objBitmap.Width, objBitmap.Height);
+            int intEncodeLength = Encoded_Value.Length; //编码后长度
+            int intBarWidth;
+            //double intBarWidth;
+            for (int i = 0; i < intEncodeLength; i++) //依码Code39 BarCode
+            {
+                intBarWidth = Encoded_Value[i] == '1' ? (WidLength *1) : (NarrowLength * 1);
+                objGraphics.FillRectangle(i % 2 == 0 ? Brushes.Black : Brushes.White, x, y, intBarWidth, BarCodeHeight);
+                //objGraphics.FillRectangle(i % 2 == 0 ? Brushes.Black : Brushes.White, (float)y, (float)x, (float)(BarCodeHeight), (float)(intBarWidth));
+                x += (int)intBarWidth;
+            }
+            return objBitmap;
+            //return RotateImg(objBitmap, 90);
+            //return KiRotate(objBitmap, 90, Color.Black);
+        }
+
+        public static Bitmap KiRotate(Bitmap bmp, float angle, Color bkColor)
+        {
+            int w = bmp.Width + 2;
+            int h = bmp.Height + 2;
+
+            PixelFormat pf;
+
+            if (bkColor == Color.Transparent)
+            {
+                pf = PixelFormat.Format32bppArgb;
+            }
+            else
+            {
+                pf = bmp.PixelFormat;
+            }
+
+            Bitmap tmp = new Bitmap(w, h, pf);
+            Graphics g = Graphics.FromImage(tmp);
+            g.Clear(bkColor);
+            g.DrawImageUnscaled(bmp, 1, 1);
+            g.Dispose();
+
+            GraphicsPath path = new GraphicsPath();
+            path.AddRectangle(new RectangleF(0f, 0f, w, h));
+            Matrix mtrx = new Matrix();
+            mtrx.Rotate(angle);
+            RectangleF rct = path.GetBounds(mtrx);
+
+            Bitmap dst = new Bitmap((int)rct.Width, (int)rct.Height, pf);
+            g = Graphics.FromImage(dst);
+            g.Clear(bkColor);
+            g.TranslateTransform(-rct.X, -rct.Y);
+            g.RotateTransform(angle);
+            g.InterpolationMode = InterpolationMode.HighQualityBilinear;
+            g.DrawImageUnscaled(tmp, 0, 0);
+            g.Dispose();
+
+            tmp.Dispose();
+
+            return dst;
+        }
+
+        public Image RotateImg(Image b, int angle)
+        {
+            angle = angle % 360;
+            //弧度转换
+            double radian = angle * Math.PI / 180.0;
+            double cos = Math.Cos(radian);
+            double sin = Math.Sin(radian);
+            //原图的宽和高
+            int w = b.Width;
+            int h = b.Height;
+            int W = (int)(Math.Max(Math.Abs(w * cos - h * sin), Math.Abs(w * cos + h * sin)));
+            int H = (int)(Math.Max(Math.Abs(w * sin - h * cos), Math.Abs(w * sin + h * cos)));
+            //目标位图
+            Bitmap dsImage = new Bitmap(W, H);
+            Graphics g = Graphics.FromImage(dsImage);
+            g.InterpolationMode = InterpolationMode.Bilinear;
+            g.SmoothingMode = SmoothingMode.HighQuality;
+            //计算偏移量
+            Point Offset = new Point((W - w) / 2, (H - h) / 2);
+            //构造图像显示区域：让图像的中心与窗口的中心点一致
+            Rectangle rect = new Rectangle(Offset.X, Offset.Y, w, h);
+            Point center = new Point(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
+            g.TranslateTransform(center.X, center.Y);
+            g.RotateTransform(360 - angle);
+            //恢复图像在水平和垂直方向的平移
+            g.TranslateTransform(-center.X, -center.Y);
+            g.DrawImage(b, rect);
+            //重至绘图的所有变换
+            g.ResetTransform();
+            g.Save();
+            g.Dispose();
+            //保存旋转后的图片
+            b.Dispose();
+            dsImage.Save("FocusPoint.jpg", ImageFormat.Jpeg);
+            return dsImage;
         }
 
         public void 字体_Click(object sender, EventArgs e)
@@ -850,231 +1018,79 @@ namespace TagEditor
             Properties.Settings.Default.Save();
         }
     }
+}
 
-    /// <summary>
-    /// Code39编码
-    /// </summary>
-    public class Code39
+class EnCodeString
+{
+    public string code39(string RawData)
     {
-        private Hashtable m_Code39 = new Hashtable();
-        private byte m_Magnify = 0;
-        /// <summary>
-        /// 放大倍数
-        /// </summary>
-        public byte Magnify { get { return m_Magnify; } set { m_Magnify = value; } }
+        EnCoder39 coder39 = new EnCoder39();
+        coder39.Raw_Data = RawData;
+        return coder39.Encode_Code39();
+    }
+}
 
-        private int m_Height = 40;
-        /// <summary>
-        /// 图形高
-        /// </summary>
-        public int Height { get { return m_Height; } set { m_Height = value; } }
+class EnCoder39
+{
+    public String Raw_Data = "";
+    public string Encode_Code39()
+    {
+        string strEncode = "010010100"; //编码初始字符
+        string AlphaBet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-. $/+%*"; //Code39的字母
+        string[] Code39 = //Code39的各字母对应码
+        {    
+                /* 0 */ "000110100", 
+                /* 1 */ "100100001",        
+                /* 2 */ "001100001", 
+                /* 3 */ "101100000",
+                /* 4 */ "000110001", 
+                /* 5 */ "100110000", 
+                /* 6 */ "001110000", 
+                /* 7 */ "000100101",
+                /* 8 */ "100100100",   
+                /* 9 */ "001100100",  
+                /* A */ "100001001",   
+                /* B */ "001001001", 
+                /* C */ "101001000", 
+                /* D */ "000011001", 
+                /* E */ "100011000",        
+                /* F */ "001011000",       
+                /* G */ "000001101",       
+                /* H */ "100001100",        
+                /* I */ "001001100",        
+                /* J */ "000011100",
+                /* K */ "100000011", 
+                /* L */ "001000011", 
+                /* M */ "101000010",       
+                /* N */ "000010011",      
+                /* O */ "100010010",        
+                /* P */ "001010010",       
+                /* Q */ "000000111", 
+                /* R */ "100000110",       
+                /* S */ "001000110",        
+                /* T */ "000010110",       
+                /* U */ "110000001",        
+                /* V */ "011000001",       
+                /* W */ "111000000", 
+                /* X */ "010010001",       
+                /* Y */ "110010000",       
+                /* Z */ "011010000",      
+                /* - */ "010000101",        
+                /* . */ "110000100",       
+                /*' '*/ "011000100",
+                /* $ */ "010101000",      
+                /* / */ "010100010",       
+                /* + */ "010001010",        
+                /* % */ "000101010",       
+                /* * */ "010010100"
+            };
 
-        private Font m_ViewFont = null;
-        /// <summary>
-        /// 字体大小
-        /// </summary>
-        public Font ViewFont { get { return m_ViewFont; } set { m_ViewFont = value; } }
-
-        public Code39()
+        Raw_Data = Raw_Data.ToUpper();
+        for (int i = 0; i < Raw_Data.Length; i++)
         {
-
-            m_Code39.Add("A", "1101010010110");
-            m_Code39.Add("B", "1011010010110");
-            m_Code39.Add("C", "1101101001010");
-            m_Code39.Add("D", "1010110010110");
-            m_Code39.Add("E", "1101011001010");
-            m_Code39.Add("F", "1011011001010");
-            m_Code39.Add("G", "1010100110110");
-            m_Code39.Add("H", "1101010011010");
-            m_Code39.Add("I", "1011010011010");
-            m_Code39.Add("J", "1010110011010");
-            m_Code39.Add("K", "1101010100110");
-            m_Code39.Add("L", "1011010100110");
-            m_Code39.Add("M", "1101101010010");
-            m_Code39.Add("N", "1010110100110");
-            m_Code39.Add("O", "1101011010010");
-            m_Code39.Add("P", "1011011010010");
-            m_Code39.Add("Q", "1010101100110");
-            m_Code39.Add("R", "1101010110010");
-            m_Code39.Add("S", "1011010110010");
-            m_Code39.Add("T", "1010110110010");
-            m_Code39.Add("U", "1100101010110");
-            m_Code39.Add("V", "1001101010110");
-            m_Code39.Add("W", "1100110101010");
-            m_Code39.Add("X", "1001011010110");
-            m_Code39.Add("Y", "1100101101010");
-            m_Code39.Add("Z", "1001101101010");
-            m_Code39.Add("0", "1010011011010");
-            m_Code39.Add("1", "1101001010110");
-            m_Code39.Add("2", "1011001010110");
-            m_Code39.Add("3", "1101100101010");
-            m_Code39.Add("4", "1010011010110");
-            m_Code39.Add("5", "1101001101010");
-            m_Code39.Add("6", "1011001101010");
-            m_Code39.Add("7", "1010010110110");
-            m_Code39.Add("8", "1101001011010");
-            m_Code39.Add("9", "1011001011010");
-            m_Code39.Add("+", "1001010010010");
-            m_Code39.Add("-", "1001010110110");
-            m_Code39.Add("*", "1001011011010");
-            m_Code39.Add("/", "1001001010010");
-            m_Code39.Add("%", "1010010010010");
-            m_Code39.Add("$", "1001001001010");
-            m_Code39.Add(".", "1100101011010");
-            m_Code39.Add(" ", "1001101011010");
+            strEncode = string.Format("{0}0{1}", strEncode, Code39[AlphaBet.IndexOf(Raw_Data[i])]);
         }
-
-        public enum Code39Model
-        {
-            /// <summary>
-            /// 基本类别 1234567890ABC
-            /// </summary>
-            Code39Normal,
-            /// <summary>
-            /// 全ASCII方式 +A+B 来表示小写
-            /// </summary>
-            Code39FullAscII
-        }
-        /// <summary>
-        /// 获得条码图形
-        /// </summary>
-        /// <param name="p_Text">文字信息</param>
-        /// <param name="p_Model">类别</param>
-        /// <param name="p_StarChar">是否增加前后*号</param>
-        /// <returns>图形</returns>
-        public Bitmap GetCodeImage(string p_Text, Code39Model p_Model, bool p_StarChar)
-        {
-            string _ValueText = "";
-            string _CodeText = "";
-            char[] _ValueChar = null;
-            switch (p_Model)
-            {
-                case Code39Model.Code39Normal:
-                    _ValueText = p_Text.ToUpper();
-                    break;
-                default:
-                    _ValueChar = p_Text.ToCharArray();
-                    Array.Reverse(_ValueChar);
-                    for (int i = 0; i != _ValueChar.Length; i++)
-                    {
-                        if ((int)_ValueChar[i] >= 97 && (int)_ValueChar[i] <= 122)
-                        {
-                            _ValueText += "+" + _ValueChar[i].ToString().ToUpper();
-
-                        }
-                        else
-                        {
-                            _ValueText += _ValueChar[i].ToString();
-                        }
-                    }
-                    break;
-            }
-            _ValueChar = _ValueText.ToCharArray();
-            if (p_StarChar == true) _CodeText += m_Code39["*"];
-            for (int i = 0; i != _ValueChar.Length; i++)
-            {
-                if (p_StarChar == true && _ValueChar[i] == '*') throw new Exception("带有起始符号不能出现*");
-                object _CharCode = m_Code39[_ValueChar[i].ToString()];
-                if (_CharCode == null) throw new Exception("不可用的字符" + _ValueChar[i].ToString());
-                _CodeText += _CharCode.ToString();
-            }
-            if (p_StarChar == true) _CodeText += m_Code39["*"];
-
-            Bitmap _CodeBmp = GetImage(_CodeText);
-            GetViewImage(_CodeBmp, p_Text);
-            return _CodeBmp;
-        }
-
-        /// <summary>
-        /// 绘制编码图形
-        /// </summary>
-        /// <param name="p_Text">编码</param>
-        /// <returns>图形</returns>
-        private Bitmap GetImage(string p_Text)
-        {
-            char[] _Value = p_Text.ToCharArray();
-
-            Array.Reverse(_Value);                  // 将数组反转
-
-            //宽 == 需要绘制的数量*放大倍数 + 两个字的宽   
-            //Bitmap _CodeImage = new Bitmap(_Value.Length * ((int)m_Magnify + 1), (int)m_Height);
-            Bitmap _CodeImage = new Bitmap((int)m_Height, _Value.Length * ((int)m_Magnify + 1));
-            Graphics _Garphics = Graphics.FromImage(_CodeImage);
-            _Garphics.FillRectangle(Brushes.White, new Rectangle(0, 0, _CodeImage.Width, _CodeImage.Height));
-
-            int _LenEx = 0;
-            for (int i = 0; i != _Value.Length; i++)
-            {
-                int _DrawWidth = m_Magnify + 1;
-                if (_Value[i] == '1')
-                {
-                    _Garphics.FillRectangle(Brushes.Black, new Rectangle(0, _LenEx, m_Height, _DrawWidth));
-                    //_Garphics.FillRectangle(Brushes.Black, Rectangle.Inflate(new Rectangle(0, _LenEx, m_Height, _DrawWidth), 1, -1));
-                    //_Garphics.FillRectangle(Brushes.Black, 0, _LenEx, m_Height,(float)0.8 );
-
-                }
-                else
-                {
-                    _Garphics.FillRectangle(Brushes.White, new Rectangle(0, _LenEx, m_Height, _DrawWidth));
-                    //_Garphics.FillRectangle(Brushes.White, Rectangle.Inflate(new Rectangle(0, _LenEx, m_Height, _DrawWidth), 1, -1));
-                    //_Garphics.FillRectangle(Brushes.White, 0, _LenEx, m_Height,(float)0.8);
-
-                }
-                //_LenEx += (float)0.8;
-                _LenEx += _DrawWidth;
-            }
-
-            _Garphics.Dispose();
-            return _CodeImage;
-        }
-        /// <summary>
-        /// 绘制文字
-        /// </summary>
-        /// <param name="p_CodeImage">图形</param>
-        /// <param name="p_Text">文字</param>
-        private void GetViewImage(Bitmap p_CodeImage, string p_Text)
-        {
-            if (m_ViewFont == null) return;
-            Graphics _Graphics = Graphics.FromImage(p_CodeImage);
-            SizeF _FontSize = _Graphics.MeasureString(p_Text, m_ViewFont);
-            if (_FontSize.Width > p_CodeImage.Width || _FontSize.Height > p_CodeImage.Height - 20)
-            {
-                _Graphics.Dispose();
-                return;
-            }
-            int _StarHeight = p_CodeImage.Height - (int)_FontSize.Height;
-            _Graphics.FillRectangle(Brushes.White, new Rectangle(0, _StarHeight, p_CodeImage.Width, (int)_FontSize.Height));
-            int _StarWidth = (p_CodeImage.Width - (int)_FontSize.Width) / 2;
-            _Graphics.DrawString(p_Text, m_ViewFont, Brushes.Black, _StarWidth, _StarHeight);
-            _Graphics.Dispose();
-        }
-
-        public Image GetImageThumb(Bitmap mg, Size newSize)
-        {
-            double ratio = 0d;
-            double myThumbWidth = 0d;
-            double myThumbHeight = 0d;
-            int x = 0;
-            int y = 0;
-            Bitmap bp;
-            if ((mg.Width / Convert.ToDouble(newSize.Width)) > (mg.Height / Convert.ToDouble(newSize.Height)))
-                ratio = Convert.ToDouble(mg.Width) / Convert.ToDouble(newSize.Width);
-            else
-                ratio = Convert.ToDouble(mg.Height) / Convert.ToDouble(newSize.Height);
-            myThumbHeight = Math.Ceiling(mg.Height / ratio);
-            myThumbWidth = Math.Ceiling(mg.Width / ratio);
-            Size thumbSize = new Size((int)newSize.Width, (int)newSize.Height);
-            bp = new Bitmap(newSize.Width, newSize.Height);
-            x = (newSize.Width - thumbSize.Width) / 2;
-            y = (newSize.Height - thumbSize.Height);
-            Graphics g = Graphics.FromImage(bp);
-            g.SmoothingMode = SmoothingMode.HighQuality;
-            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-            Rectangle rect = new Rectangle(x, y, thumbSize.Width, thumbSize.Height);
-            g.DrawImage(mg, rect, 0, 0, mg.Width, mg.Height, GraphicsUnit.Pixel);
-            Image bn = bp as Image;
-            return bn;
-        }
+        strEncode = string.Format("{0}0010010100", strEncode); //补上结束符号
+        return strEncode;
     }
 }

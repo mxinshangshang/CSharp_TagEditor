@@ -173,7 +173,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 4, 0, 4);
-            this.menuStrip1.Size = new System.Drawing.Size(718, 29);
+            this.menuStrip1.Size = new System.Drawing.Size(724, 29);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "菜单栏";
             // 
@@ -726,7 +726,7 @@
             this.toolStripButton14});
             this.toolStrip1.Location = new System.Drawing.Point(0, 29);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(718, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(724, 25);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "工具栏";
             this.toolStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.toolStrip1_ItemClicked);
@@ -948,7 +948,7 @@
             this.statusStrip1.Location = new System.Drawing.Point(0, 412);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 17, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(718, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(724, 22);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "状态栏";
             this.statusStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.statusStrip1_ItemClicked);
@@ -987,7 +987,7 @@
             this.tabControl1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(718, 358);
+            this.tabControl1.Size = new System.Drawing.Size(724, 358);
             this.tabControl1.TabIndex = 3;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
@@ -1198,7 +1198,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(718, 434);
+            this.ClientSize = new System.Drawing.Size(724, 434);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.toolStrip1);
@@ -1332,7 +1332,6 @@
         private System.Windows.Forms.ToolStripButton tSBtnLeft;
         private System.Windows.Forms.ToolStripButton tSBtnCenter;
         private System.Windows.Forms.ToolStripButton tSBtnRight;
-        private System.Windows.Forms.ToolStripLabel toolStripLabel2;
         private System.Windows.Forms.ToolStripButton toolStripButton14;
         public System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
         public System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
@@ -1351,6 +1350,7 @@
         private System.Windows.Forms.PrintPreviewDialog printPreviewDialog1;
         private System.Windows.Forms.ToolStripMenuItem 设置ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 标签内容表格路径设置ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel2;
         //private System.Windows.Forms.ToolStripComboBox toolStripComboBox1;
     }
 }

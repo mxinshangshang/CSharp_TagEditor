@@ -25,7 +25,8 @@ namespace TagEditor
 
         private void button1_Click(object sender, EventArgs e)
         {
-            form.id = textBox1.Text;
+            //form.id = textBox1.Text;
+            form.id = "59401210";
             this.Close();
         }
     }
