@@ -14,6 +14,7 @@ using System.Drawing.Imaging;
 using System.Data.OleDb;
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
+using OnBarcode.Barcode;
 
 namespace TagEditor
 {
@@ -570,20 +571,143 @@ namespace TagEditor
             /*如果需要改变自己 可以在new Font(new FontFamily("黑体"),11）中的“黑体”改成自己要的字体就行了，黑体 后面的数字代表字体的大小
              System.Drawing.Brushes.Blue , 170, 10 中的 System.Drawing.Brushes.Blue 为颜色，后面的为输出的位置 ，第一个10是左边距，第二个35是上边距*/
             //e.Graphics.DrawString(GetCurrentRichTextBox().Text, new Font(new FontFamily("Arial"), 11), Brushes.Black, 0, 0);
-            for (int j = Prm1.Length-1; j >=0; j--)
+            //for (int j = Prm1.Length-1; j >=0; j--)
+            //{
+            //    if (r.Text.Contains(Prm1[j]))
+            //    {
+            //        r.Text = r.Text.Replace(Prm1[j], Prm[j]);
+            //    }
+            //}
+            //e.Graphics.DrawString(r.Text, r.SelectionFont, Brushes.Black, 0, 0);
+
+            Barcode bar = new Barcode();
+            e.Graphics.ScaleTransform(1, 0.5f);
+            e.Graphics.DrawImage(RotateImg(bar.GetBarCode(Prm[2]), 90), 275.0F, 238.0F);
+
+            e.Graphics.ScaleTransform(1, 2);
+            Font font1 = new Font("Arial Narrow", 11);
+            Font font2 = new Font("Arial Narrow", 12);
+            Font font3 = new Font("Arial Narrow", 8);
+            int xcurrent = 315;
+            int ycurrent = 236;
+            for (int j = Prm1.Length - 1; j >= 0; j--)
+            {
+                if (r.Text.Contains(Prm1[j]))
+                {
+                    switch (j)
+                    {
+                        case 0:
+                            e.Graphics.DrawString(Prm[0], font2, Brushes.Black, (float)1 / (float)80 * xcurrent, (float)15 / (float)60 * ycurrent);
+                            break;
+                        case 1:
+                            e.Graphics.DrawString(Prm[1], font2, Brushes.Black, (float)((float)16 / (float)80)* xcurrent, (float)((float)15 / (float)60) * ycurrent);
+                            break;
+                        case 2:
+                            e.Graphics.DrawString(Prm[2], font3, Brushes.Black, (float)59 / (float)80 * xcurrent, (float)54.5 / (float)60 * ycurrent);
+                            break;
+                        case 3:
+                            e.Graphics.DrawString(Prm[3], font1, Brushes.Black, (float)1 / 80 * xcurrent, (float)0 / 60 * ycurrent);
+                            break;
+                        case 4:
+                            e.Graphics.DrawString(Prm[4], font1, Brushes.Black, (float)1 / 80 * xcurrent, (float)((float)5 / (float)60) * ycurrent);
+                            break;
+                        case 5:
+                            e.Graphics.DrawString(Prm[5], font1, Brushes.Black, (float)1 / 80 * xcurrent, (float)10 / 60 * ycurrent);
+                            break;
+                        case 6:
+                            e.Graphics.DrawString(Prm[6], font2, Brushes.Black, (float)1 / 80 * xcurrent, (float)21 / 60 * ycurrent);
+                            break;
+                        case 7:
+                            e.Graphics.DrawString(Prm[7], font2, Brushes.Black, (float)12 / 80 * xcurrent, (float)21 / 60 * ycurrent);
+                            break;
+                        case 8:
+                            e.Graphics.DrawString(Prm[8], font2, Brushes.Black, (float)28 / 80 * xcurrent, (float)27 / 60 * ycurrent);
+                            break;
+                        case 9:
+                            e.Graphics.DrawString(Prm[9], font2, Brushes.Black, (float)1 / 80 * xcurrent, (float)31.5 / 60 * ycurrent);
+                            break;
+                        case 10:
+                            e.Graphics.DrawString(Prm[10], font2, Brushes.Black, (float)15 / (float)80 * xcurrent, (float)31.5 / 60 * ycurrent);
+                            break;
+                        case 11:
+                            e.Graphics.DrawString(Prm[11], font2, Brushes.Black, (float)28 / 80 * xcurrent, (float)37 / 60 * ycurrent);
+                            break;
+                        case 12:
+                            e.Graphics.DrawString(Prm[12], font2, Brushes.Black, (float)((float)28 / (float)80) * xcurrent, (float)41.5 / 60 * ycurrent);
+                            break;
+                        case 13:
+                            e.Graphics.DrawString(Prm[13], font2, Brushes.Black, (float)28 / 80 * xcurrent, (float)46 / 60 * ycurrent);
+                            break;
+                        case 14:
+                            //e.Graphics.DrawString(r.Lines[14], font2, Brushes.Black, 3 / 80 * xcurrent, 0);
+                            break;
+                        case 15:
+                            e.Graphics.DrawString(Prm[15], font2, Brushes.Black, (float)28 / 80 * xcurrent, (float)48.5 / 60 * ycurrent);
+                            break;
+                        case 16:
+                            //e.Graphics.DrawString(r.Lines[16], font2, Brushes.Black, 3 / 80 * xcurrent, 0);
+                            break;
+                        case 17:
+                            //e.Graphics.DrawString(r.Lines[17], font2, Brushes.Black, 3 / 80 * xcurrent, 0);
+                            break;
+                        default:
+                            MessageBox.Show("area缺失");
+                            break;
+                    }
+                    //r.Text = r.Text.Replace(Prm1[j], Prm[j]);
+                }
+            }
+
+            for (int j = Prm1.Length - 1; j >= 0; j--)
             {
                 if (r.Text.Contains(Prm1[j]))
                 {
                     r.Text = r.Text.Replace(Prm1[j], Prm[j]);
                 }
             }
-            e.Graphics.DrawString(r.Text, r.SelectionFont, Brushes.Black, 0, 0);
-            //e.Graphics.TranslateTransform(100, 100);
-            //e.Graphics.RotateTransform(360.0F);
-            //e.Graphics.TranslateTransform(0.0F, -320.0F); // 平移
-            e.Graphics.ScaleTransform(0.65f, 1);
-            //e.Graphics.ScaleTransform(1, 0.65f);
-            e.Graphics.DrawImage(DrawImg39(new EnCodeString().code39(Prm[2])), 100.0F, 50.0F);  
+
+
+            //Barcode bar = new Barcode();
+            //e.Graphics.ScaleTransform(1, 0.5f);
+            //e.Graphics.DrawImage(RotateImg(bar.GetBarCode(Prm[2]), 90), 275.0F, 238.0F);
+
+            //Linear code39 = new Linear();
+            //// Barcode data to encode
+            //code39.Data = Prm[2];
+            //code39.Type = BarcodeType.CODE39;
+            ////code39.AddCheckSum = true;
+            //code39.ShowText = false;
+            //// The space between 2 characters in code 39; This a multiple of X; The default is 1.
+            //code39.I = 1.0f;
+            //// Wide/narrow ratio, 2.0 - 3.0 inclusive, default is 2.
+            //code39.N = 2.0f;
+            //// If true, display a * in the beginning and end of barcode text
+            //code39.ShowStartStopInText = false;
+
+            ///*
+            //* Barcode Image Related Settings
+            //*/
+            //// Unit of meature for all size related setting in the library. 
+            ////code39.UOM = UnitOfMeasure.PIXEL;
+            //// Bar module width (X), default is 1 pixel;
+            //code39.X = 1;
+            //// Bar module height (Y), default is 60 pixel;
+            //code39.Y = 60;
+
+            //// Image resolution in dpi, default is 72 dpi.
+            //code39.Resolution = 50;
+
+            //code39.Format = ImageFormat.Emf;
+
+            ////e.Graphics.TranslateTransform(100, 100);
+            ////e.Graphics.TranslateTransform(0.0F, -320.0F); // 平移
+            ////e.Graphics.ScaleTransform(0.65f, 1);
+            ////e.Graphics.RotateTransform(90.0F);
+            ////e.Graphics.ScaleTransform(1, 0.67f);
+            //e.Graphics.ScaleTransform(0.5f, 1);
+            ////e.Graphics.DrawImage(DrawImg39(new EnCodeString().code39(Prm[2])), 200.0F, 200.0F);
+            ////e.Graphics.DrawImage(RotateImg(code39.drawBarcode(), 90), 287.0F, 190.0F);
+            //e.Graphics.DrawImage(code39.drawBarcode(), 200.0F, 200.0F);
         }
 
         private Image DrawImg39(String Encoded_Value)
@@ -689,7 +813,7 @@ namespace TagEditor
             g.Dispose();
             //保存旋转后的图片
             b.Dispose();
-            dsImage.Save("FocusPoint.jpg", ImageFormat.Jpeg);
+            //dsImage.Save("FocusPoint.jpg", ImageFormat.Jpeg);
             return dsImage;
         }
 
@@ -1093,4 +1217,289 @@ class EnCoder39
         strEncode = string.Format("{0}0010010100", strEncode); //补上结束符号
         return strEncode;
     }
+}
+
+public class Barcode
+{
+    //对应码表
+    private Hashtable Decode;
+    private Hashtable CheckCode;
+    //每个字符间的间隔符
+    private string SPARATOR = "0";
+    //float WidthUNIT= 0.25f;//宽度单位 mm
+    private int WidthCU = 3;  //粗线和宽间隙宽度
+    private int WidthXI = 1;  //细线和窄间隙宽度
+    private int xCoordinate = 25;//75;  //条码起始坐标
+    private int LineHeight = 60;
+    private int Height = 0;
+    private int Width = 0;
+
+    #region 加载对应码表
+    public Barcode()
+    {
+        Decode = new Hashtable();
+        Decode.Add("0", "000110100");
+        Decode.Add("1", "100100001");
+        Decode.Add("2", "001100001");
+        Decode.Add("3", "101100000");
+        Decode.Add("4", "000110001");
+        Decode.Add("5", "100110000");
+        Decode.Add("6", "001110000");
+        Decode.Add("7", "000100101");
+        Decode.Add("8", "100100100");
+        Decode.Add("9", "001100100");
+        Decode.Add("A", "100001001");
+        Decode.Add("B", "001001001");
+        Decode.Add("C", "101001000");
+        Decode.Add("D", "000011001");
+        Decode.Add("E", "100011000");
+        Decode.Add("F", "001011000");
+        Decode.Add("G", "000001101");
+        Decode.Add("H", "100001100");
+        Decode.Add("I", "001001101");
+        Decode.Add("J", "000011100");
+        Decode.Add("K", "100000011");
+        Decode.Add("L", "001000011");
+        Decode.Add("M", "101000010");
+        Decode.Add("N", "000010011");
+        Decode.Add("O", "100010010");
+        Decode.Add("P", "001010010");
+        Decode.Add("Q", "000000111");
+        Decode.Add("R", "100000110");
+        Decode.Add("S", "001000110");
+        Decode.Add("T", "000010110");
+        Decode.Add("U", "110000001");
+        Decode.Add("V", "011000001");
+        Decode.Add("W", "111000000");
+        Decode.Add("X", "010010001");
+        Decode.Add("Y", "110010000");
+        Decode.Add("Z", "011010000");
+        Decode.Add("-", "010000101");
+        Decode.Add("%", "000101010");
+        Decode.Add("$", "010101000");
+        Decode.Add("*", "010010100");
+
+        CheckCode = new Hashtable();
+        CheckCode.Add("0", "0");
+        CheckCode.Add("1", "1");
+        CheckCode.Add("2", "2");
+        CheckCode.Add("3", "3");
+        CheckCode.Add("4", "4");
+        CheckCode.Add("5", "5");
+        CheckCode.Add("6", "6");
+        CheckCode.Add("7", "7");
+        CheckCode.Add("8", "8");
+        CheckCode.Add("9", "9");
+        CheckCode.Add("A", "10");
+        CheckCode.Add("B", "11");
+        CheckCode.Add("C", "12");
+        CheckCode.Add("D", "13");
+        CheckCode.Add("E", "14");
+        CheckCode.Add("F", "15");
+        CheckCode.Add("G", "16");
+        CheckCode.Add("H", "17");
+        CheckCode.Add("I", "18");
+        CheckCode.Add("J", "19");
+        CheckCode.Add("K", "20");
+        CheckCode.Add("L", "21");
+        CheckCode.Add("M", "22");
+        CheckCode.Add("N", "23");
+        CheckCode.Add("O", "24");
+        CheckCode.Add("P", "25");
+        CheckCode.Add("Q", "26");
+        CheckCode.Add("R", "27");
+        CheckCode.Add("S", "28");
+        CheckCode.Add("T", "29");
+        CheckCode.Add("U", "30");
+        CheckCode.Add("V", "31");
+        CheckCode.Add("W", "32");
+        CheckCode.Add("X", "33");
+        CheckCode.Add("Y", "34");
+        CheckCode.Add("Z", "35");
+        CheckCode.Add("-", "36");
+        CheckCode.Add(".", "37");
+        CheckCode.Add(",", "38");
+        CheckCode.Add("$", "39");
+        CheckCode.Add("/", "40");
+        CheckCode.Add("+", "41");
+        CheckCode.Add("%", "42");
+    }
+    #endregion
+
+    #region 保存文件
+
+    public Boolean saveFile(string Code, string Title, int UseCheck)
+    {
+        string code39 = Encode39(Code, UseCheck);
+        if (code39 != null)
+        {
+            Bitmap saved = new Bitmap(this.Width, this.Height);
+            Graphics g = Graphics.FromImage(saved);
+            g.FillRectangle(new SolidBrush(Color.White), 0, 0, this.Width, this.Height);
+            this.DrawBarCode39(code39, Title, g);
+            string path = @"c:\";
+            string filename = path + Code + ".jpg";
+            saved.Save(filename, ImageFormat.Jpeg);
+            saved.Dispose();
+            return true;
+        }
+        return false;
+    }
+    #endregion
+
+    #region 转换编码
+    /***
+    * Code:未经编码的字符串
+    * 
+    * **/
+    private string Encode39(string Code, int UseCheck)
+    {
+        int UseStand = 1;  //检查输入待编码字符是否为标准格式（是否以*开始结束）
+
+        //保存备份数据
+        string originalCode = Code;
+
+        //为空不进行编码
+        if (null == Code || Code.Trim().Equals(""))
+        {
+            return null;
+        }
+        //检查错误字符
+        Code = Code.ToUpper();  //转为大写
+        Regex rule = new Regex(@"[^0-9A-Z%$\-*]");
+        if (rule.IsMatch(Code))
+        {
+            //MessageBox.Show("编码中包含非法字符，目前仅支持字母,数字及%$-*符号!!");
+            return null;
+        }
+        //计算检查码
+        if (UseCheck == 1)
+        {
+            int Check = 0;
+            //累计求和
+            for (int i = 0; i < Code.Length; i++)
+            {
+                Check += int.Parse((string)CheckCode[Code.Substring(i, 1)]);
+            }
+            //取模
+            Check = Check % 43;
+            //附加检测码
+            foreach (DictionaryEntry de in CheckCode)
+            {
+                if ((string)de.Value == Check.ToString())
+                {
+                    Code = Code + (string)de.Key;
+                    break;
+                }
+            }
+        }
+        //标准化输入字符，增加起始标记
+        if (UseStand == 1)
+        {
+            if (Code.Substring(0, 1) != "*")
+            {
+                Code = "*" + Code;
+            }
+            if (Code.Substring(Code.Length - 1, 1) != "*")
+            {
+                Code = Code + "*";
+            }
+        }
+        //转换成39编码
+        string Code39 = "";
+        for (int i = 0; i < Code.Length; i++)
+        {
+            Code39 = Code39 + (string)Decode[Code.Substring(i, 1)] + SPARATOR;
+        }
+
+        int height = 30 + LineHeight;//定义图片高度      
+        int width = xCoordinate;
+        for (int i = 0; i < Code39.Length; i++)
+        {
+            if ("0".Equals(Code39.Substring(i, 1)))
+            {
+                width += WidthXI;
+            }
+            else
+            {
+                width += WidthCU;
+            }
+        }
+        this.Width = width + xCoordinate;
+        this.Height = height;
+
+        return Code39;
+    }
+    #endregion
+
+    #region 绘制图像
+    private void DrawBarCode39(string Code39, string Title, Graphics g)
+    {
+        //int UseTitle = 0;  //条码上端显示标题
+                           //int UseTTF = 1;  //使用TTF字体，方便显示中文，需要$UseTitle=1时才能生效
+        //if (Title.Trim().Equals(""))
+        //{
+        //    UseTitle = 0;
+        //}
+        Pen pWhite = new Pen(Color.White, 1);
+        Pen pBlack = new Pen(Color.Black, 1);
+        SolidBrush brush = new SolidBrush(Color.Black);
+        int position = xCoordinate;
+        //显示标题
+        //if (UseTitle == 1)
+        //{
+        //    Font TitleFont = new Font("宋体", 10, FontStyle.Bold);
+        //    SizeF sf = g.MeasureString(Title, TitleFont);
+        //    g.DrawString(Title, TitleFont, brush, (Width - sf.Width) / 2, Height - sf.Height);
+        //}
+        for (int i = 0; i < Code39.Length; i++)
+        {
+            //绘制条线
+            if ("0".Equals(Code39.Substring(i, 1)))
+            {
+                for (int j = 0; j < WidthXI; j++)
+                {
+                    g.DrawLine(pBlack, position + j, 12, position + j, 12 + LineHeight);
+                }
+                position += WidthXI;
+            }
+            else
+            {
+                for (int j = 0; j < WidthCU; j++)
+                {
+                    g.DrawLine(pBlack, position + j, 12, position + j, 12 + LineHeight);
+                }
+                position += WidthCU;
+            }
+            i++;
+            //绘制间隔线
+            if ("0".Equals(Code39.Substring(i, 1)))
+            {
+                position += WidthXI;
+            }
+            else
+            {
+                position += WidthCU;
+            }
+        }
+        return;
+    }
+    #endregion
+
+    #region 获得生成后条码图像
+    /// <summary>
+    /// 获得生成后条码图像
+    /// </summary>
+    /// <param name="Code">条码值</param>
+    /// <returns>Image对象</returns>
+    public Bitmap GetBarCode(string Code)
+    {
+        string Code39 = Encode39(Code, 1);
+        Bitmap barCode = new Bitmap(this.Width, this.Height);
+        Graphics g = Graphics.FromImage(barCode);
+        g.FillRectangle(new SolidBrush(Color.White), 0, 0, this.Width, this.Height);
+        this.DrawBarCode39(Code39, Code, g);
+        return barCode;
+    }
+    #endregion
 }

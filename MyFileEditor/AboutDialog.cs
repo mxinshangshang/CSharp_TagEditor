@@ -99,15 +99,5 @@ namespace TagEditor
             }
         }
         #endregion
-
-        private void textBoxDescription_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tableLayoutPanel_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
     }
 }
